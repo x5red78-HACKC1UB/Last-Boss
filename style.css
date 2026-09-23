@@ -31,6 +31,9 @@ body.game-started{
     box-shadow: 0 0 2px black;
     transform: scale(1.1);
 }
+#start.game-started{
+    display: none;
+}
 .titlescreen{
     display:flex;
     align-items: center;
