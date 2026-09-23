@@ -10,19 +10,20 @@ let player={
     speed:10,
     health:10,
 }
-let keys={};
+
 
 
 start_button.addEventListener('click', startgame);
 
 //Resizing
-window.addEventListener('resize',()=>{
+function resize() {
+    window.addEventListener('resize',()=>{
     if(!game){
 game.width=window.innerWidth;
 game.height=window.innerHeight;
     }
 });
-
+}
 //Fuctions
 function draw(type){
     switch(type){
@@ -35,12 +36,28 @@ function draw(type){
     }
 }
 
+window.addEventListener('keydown',(event)=>{
+if (event.key.toLowerCase() === 'w') {
+    player.y -= player.speed;
 
-
+    ctx.clearRect(0,0,game.width,game.height);
+    draw("player");
+}
+});
+function loop60fps() {
+    if(!game || !ctx)return;
+     ctx.clearRect(0, 0, game.width, game.height);
+    draw("player");
+    requestAnimationFrame(loop60fps)
+}
 
 //Start Game
 function startgame() {
     
     document.body.classList.add("game-started");
-draw("player");
+resize();
+loop60fps();
+
+
+
 }
