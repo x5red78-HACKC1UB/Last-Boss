@@ -12,9 +12,9 @@ let player={
     velocityY:0,
     grounded:false,
 }
-let gravitypower=0.5;
-const bouncegravitypower=0.35;
-const bounceDamping=0.9;
+let gravitypower=0.25;
+const bouncegravitypower=0.3;
+const bounceDamping=0.95;
 const floor=window.innerHeight;
 let keys={
     a:false,
@@ -65,7 +65,7 @@ if(mode==="bounce"){
 }
 
 function border() {
-    player.x = Math.max(0, Math.min(player.x, game.width - player.width));
+    player.x = Math.max(0, Math.min(player.x, game.width - player.width)); //stops the player from escaping
     player.y = Math.max(0, Math.min(player.y, game.height - player.height));
 }
 
