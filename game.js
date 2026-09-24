@@ -12,7 +12,9 @@ let player={
     velocityY:0,
     grounded:false,
 }
-const gravitypower=0.1;
+let gravitypower=0.5;
+const bouncegravitypower=0.35;
+const bounceDamping=0.9;
 const floor=window.innerHeight;
 let keys={
     a:false,
@@ -49,6 +51,18 @@ if(mode==="normal"){
 }
     }
 }
+if(mode==="bounce"){
+    player={
+    x:60,
+    y:60,
+    width:25,
+    height:25,
+    speed:10,
+    health:10,
+    velocityY:0,
+    grounded:false,
+    }
+}
 
 function border() {
     player.x = Math.max(0, Math.min(player.x, game.width - player.width));
@@ -62,14 +76,22 @@ if (key === '1') {
     event.preventDefault();
 }
 if (key === '5') {
-     mode="gravity"
+    if (mode === "normal") {
+        mode = "gravity";
+    } else if (mode === "gravity") {  //Mode switch
+        mode = "bounce";
+    } else {
+        mode = "normal";
+    }
+    player.velocityY = 0;
+    player.grounded = false;
     event.preventDefault();
 }
 if(key in keys){
     keys[key]=true;
     event.preventDefault();  
 }
-});
+});     //Key up
 window.addEventListener('keyup',(event)=>{
 const key=event.key.toLowerCase();
 if(key in keys){
@@ -86,13 +108,18 @@ function movementupdate() {
 
     if (mode === "gravity") {
         if ((keys.w || keys.arrowup) && player.grounded) {
-            player.velocityY = -10;
+            player.velocityY = -15;
             player.grounded = false;
         }
     } else {
+        if (mode==="normal") {
+        if (keys.w || keys.arrowup) player.y -= player.speed;
+        if (keys.s || keys.arrowdown) player.y += player.speed;
+    }else{
         if (keys.w || keys.arrowup) player.y -= player.speed;
         if (keys.s || keys.arrowdown) player.y += player.speed;
     }
+}
 }
 
 
@@ -205,31 +232,84 @@ function draw(type){ //Massive img loader
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         
+        case "bounce10":
+            ctx.fillStyle="rgb(238, 255, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce9":
+            ctx.fillStyle="rgb(202, 216, 0)";
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce8":
+            ctx.fillStyle="rgb(176, 189, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce7":
+            ctx.fillStyle="rgb(144, 154, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce6":
+            ctx.fillStyle="rgb(111, 102, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce5":
+            ctx.fillStyle="rgb(88, 71, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce4":
+            ctx.fillStyle="rgb(59, 50, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce3":
+            ctx.fillStyle="rgb(38, 25, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce2":
+            ctx.fillStyle="rgb(13, 11, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce1":
+            ctx.fillStyle="rgb(6, 5, 0)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "bounce0":
+            ctx.fillStyle="black"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
         default:
             console.log("Ngl twin there's nothing here.(unknown image)")    
     }
 }
 
 function gravity() {
-    if (mode !== "gravity") return;
-
+    if (mode !== "gravity" && mode !== "bounce") return;
+if (mode==="gravity") {
     player.grounded = false;
 
    
     if (!(keys.w || keys.arrowup) && player.velocityY < 0) {
-        player.velocityY *= 0.5;
+        player.velocityY *= 0.8;
     }
 
     player.velocityY += gravitypower;
     player.y += player.velocityY;
 
-    if (player.y + player.height >= floor) {
-        player.y = floor - player.height;
+    if (player.y + player.height >= game.height) {
+        player.y = game.height - player.height;
         player.velocityY = 0;
         player.grounded = true;
     }
+} else{
+    player.velocityY += bouncegravitypower;
+    player.y += player.velocityY;
+    
+    
+    if (player.y + player.height >= game.height) {
+        player.y = game.height - player.height;
+        player.velocityY = -Math.abs(player.velocityY) * bounceDamping;
+    }
 }
-
+}
 
 function loop60fps() {
     if(!game || !ctx)return;
@@ -241,76 +321,14 @@ function loop60fps() {
     requestAnimationFrame(loop60fps);
 }
  function hp() {
-    if (mode==="gravity") {
-        if(player.health=== 10){ 
-        draw("gravity10");
-    };
-    if (player.health ===9) {
-        draw("gravity9")
-    }
-    if(player.health=== 8){
-        draw("gravity8");
-    };
-    if (player.health ===7) {
-        draw("gravity7")
-    }
-    if(player.health=== 6){
-        draw("gravity6");
-    };
-    if (player.health ===5) {
-        draw("gravity5")
-    }
-    if (player.health ===4) {
-        draw("gravity4")
-    } 
-    if(player.health=== 3){
-        draw("gravity3");
-    };
-    if (player.health ===2) {
-        draw("gravity2")
-    }
-    if(player.health=== 1){
-        draw("gravity1");
-    };
-    if (player.health ===0) {
-        draw("gravity0")
-    }
-    } else {
-        if(player.health=== 10){ //Too lazy to make a switch
-        draw("player10");
-    };
-    if (player.health ===9) {
-        draw("player9")
-    }
-    if(player.health=== 8){
-        draw("player8");
-    };
-    if (player.health ===7) {
-        draw("player7")
-    }
-    if(player.health=== 6){
-        draw("player6");
-    };
-    if (player.health ===5) {
-        draw("player5")
-    }
-    if (player.health ===4) {
-        draw("player4")
-    } 
-    if(player.health=== 3){
-        draw("player3");
-    };
-    if (player.health ===2) {
-        draw("player2")
-    }
-    if(player.health=== 1){
-        draw("player1");
-    };
-    if (player.health ===0) {
-        draw("player0")
-    }
+    const skinPrefix = mode === "bounce"
+        ? "bounce"
+        : mode === "gravity"
+            ? "gravity"
+            : "player";
+
+    draw(skinPrefix + player.health);
  }
-}
 
 //Start Game
 function startgame() {
