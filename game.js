@@ -84,12 +84,15 @@ function movementupdate() {
     if(keys.arrowleft)player.x -=player.speed;
     if(keys.arrowright) player.x +=player.speed;
 
-    if ((keys.w || keys.arrowup) && player.grounded) {
-        player.velocityY = -10;
-        player.grounded = false;
+    if (mode === "gravity") {
+        if ((keys.w || keys.arrowup) && player.grounded) {
+            player.velocityY = -10;
+            player.grounded = false;
+        }
+    } else {
+        if (keys.w || keys.arrowup) player.y -= player.speed;
+        if (keys.s || keys.arrowdown) player.y += player.speed;
     }
-
-    if (keys.s || keys.arrowdown) player.y += player.speed;
 }
 
 
