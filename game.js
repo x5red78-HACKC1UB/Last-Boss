@@ -9,8 +9,12 @@ let player={
     height:25,
     speed:5,
     health:10,
+    velocityY:0,
+    grounded:false,
 }
-const keys={
+const gravitypower=0.1;
+const floor=window.innerHeight;
+let keys={
     a:false,
     s:false,
     w:false,
@@ -20,11 +24,45 @@ const keys={
     arrowup:false,
     arrowdown:false,
 }
+let mode="normal";
+
+if(mode==="normal"){
+    keys={
+    a:false,
+    s:false,
+    w:false,
+    d:false,
+    arrowleft:false,
+    arrowright:false,
+    arrowup:false,
+    arrowdown:false,
+}
+} else{
+    if (mode==="gravity") {
+        keys={
+    a:false,
+    w:false,
+    d:false,
+    arrowleft:false,
+    arrowright:false,
+    arrowup:false,
+}
+    }
+}
+
+function border() {
+    player.x = Math.max(0, Math.min(player.x, game.width - player.width));
+    player.y = Math.max(0, Math.min(player.y, game.height - player.height));
+}
 
 window.addEventListener('keydown',(event)=>{ //key input
 const key=event.key.toLowerCase();
 if (key === '1') {
     player.health = Math.max(0, player.health - 1);
+    event.preventDefault();
+}
+if (key === '5') {
+     mode="gravity"
     event.preventDefault();
 }
 if(key in keys){
@@ -41,14 +79,17 @@ if(key in keys){
 });
 
 function movementupdate() {
-    if (keys.w) player.y -= player.speed;
-    if (keys.s) player.y += player.speed;
     if (keys.a) player.x -= player.speed;
     if (keys.d) player.x += player.speed; //movement code
-    if(keys.arrowup) player.y -=player.speed;
-    if(keys.arrowdown) player.y +=player.speed;
     if(keys.arrowleft)player.x -=player.speed;
     if(keys.arrowright) player.x +=player.speed;
+
+    if ((keys.w || keys.arrowup) && player.grounded) {
+        player.velocityY = -10;
+        player.grounded = false;
+    }
+
+    if (keys.s || keys.arrowdown) player.y += player.speed;
 }
 
 
@@ -113,8 +154,74 @@ function draw(type){ //Massive img loader
         case "player0":
             ctx.fillStyle="black"
             ctx.fillRect(player.x,player.y,player.width,player.height)
+
+
+        case "gravity10":
+            ctx.fillStyle="rgb(13, 0, 255)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity9":
+            ctx.fillStyle="rgb(12, 1, 216)";
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity8":
+            ctx.fillStyle="rgb(173, 171, 171)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity7":
+            ctx.fillStyle="rgb(156, 156, 156)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity6":
+            ctx.fillStyle="rgb(129, 129, 129)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity5":
+            ctx.fillStyle="rgb(103, 103, 103)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity4":
+            ctx.fillStyle="rgb(81, 81, 81)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity3":
+            ctx.fillStyle="rgb(60,60,60)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity2":
+            ctx.fillStyle="rgb(40,40,40)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity1":
+            ctx.fillStyle="rgb(20,20,20)"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
+        case "gravity0":
+            ctx.fillStyle="black"
+            ctx.fillRect(player.x,player.y,player.width,player.height)
+        
         default:
             console.log("Ngl twin there's nothing here.(unknown image)")    
+    }
+}
+
+function gravity() {
+    if (mode !== "gravity") return;
+
+    player.grounded = false;
+
+   
+    if (!(keys.w || keys.arrowup) && player.velocityY < 0) {
+        player.velocityY *= 0.5;
+    }
+
+    player.velocityY += gravitypower;
+    player.y += player.velocityY;
+
+    if (player.y + player.height >= floor) {
+        player.y = floor - player.height;
+        player.velocityY = 0;
+        player.grounded = true;
     }
 }
 
@@ -123,12 +230,17 @@ function loop60fps() {
     if(!game || !ctx)return;
      ctx.clearRect(0, 0, game.width, game.height); // Makes the game run smoothly
      movementupdate();
+     gravity();
+    border();
     draw("player10");
     hp();
     requestAnimationFrame(loop60fps);
 }
  function hp() {
-    if(player.health=== 10){ //Too lazy to make a switch
+    if (mode==="gravity") {
+        
+    } else {
+        if(player.health=== 10){ //Too lazy to make a switch
         draw("player10");
     };
     if (player.health ===9) {
@@ -162,6 +274,7 @@ function loop60fps() {
         draw("player0")
     }
  }
+}
 
 //Start Game
 function startgame() {
