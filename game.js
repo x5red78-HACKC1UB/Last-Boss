@@ -154,6 +154,7 @@ function draw(type){ //Massive img loader
         case "player0":
             ctx.fillStyle="black"
             ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
 
 
         case "gravity10":
@@ -165,40 +166,41 @@ function draw(type){ //Massive img loader
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity8":
-            ctx.fillStyle="rgb(173, 171, 171)"
+            ctx.fillStyle="rgb(13, 0, 171)"
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity7":
-            ctx.fillStyle="rgb(156, 156, 156)"
+            ctx.fillStyle="rgb(12, 0, 156)"
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity6":
-            ctx.fillStyle="rgb(129, 129, 129)"
+            ctx.fillStyle="rgb(13, 1, 129)"
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity5":
-            ctx.fillStyle="rgb(103, 103, 103)"
+            ctx.fillStyle="rgb(12, 0, 103)"
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity4":
-            ctx.fillStyle="rgb(81, 81, 81)"
+            ctx.fillStyle="rgb(13, 1, 81)"
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity3":
-            ctx.fillStyle="rgb(60,60,60)"
+            ctx.fillStyle="rgb(12,0,60)"
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity2":
-            ctx.fillStyle="rgb(40,40,40)"
+            ctx.fillStyle="rgb(13,1,40)"
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity1":
-            ctx.fillStyle="rgb(20,20,20)"
+            ctx.fillStyle="rgb(13,1,20)"
             ctx.fillRect(player.x,player.y,player.width,player.height)
             break;
         case "gravity0":
             ctx.fillStyle="black"
             ctx.fillRect(player.x,player.y,player.width,player.height)
+            break;
         
         default:
             console.log("Ngl twin there's nothing here.(unknown image)")    
@@ -232,13 +234,44 @@ function loop60fps() {
      movementupdate();
      gravity();
     border();
-    draw("player10");
     hp();
     requestAnimationFrame(loop60fps);
 }
  function hp() {
     if (mode==="gravity") {
-        
+        if(player.health=== 10){ 
+        draw("gravity10");
+    };
+    if (player.health ===9) {
+        draw("gravity9")
+    }
+    if(player.health=== 8){
+        draw("gravity8");
+    };
+    if (player.health ===7) {
+        draw("gravity7")
+    }
+    if(player.health=== 6){
+        draw("gravity6");
+    };
+    if (player.health ===5) {
+        draw("gravity5")
+    }
+    if (player.health ===4) {
+        draw("gravity4")
+    } 
+    if(player.health=== 3){
+        draw("gravity3");
+    };
+    if (player.health ===2) {
+        draw("gravity2")
+    }
+    if(player.health=== 1){
+        draw("gravity1");
+    };
+    if (player.health ===0) {
+        draw("gravity0")
+    }
     } else {
         if(player.health=== 10){ //Too lazy to make a switch
         draw("player10");
