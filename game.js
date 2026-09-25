@@ -380,23 +380,66 @@ async function fire() {
     laseractive = true;
     randomLaser();
 
-   laserstat.opacity = 0.2;
-await laserTime(300);
 
-laserstat.opacity = 0.4;
-await laserTime(300);
-
-laserstat.opacity = 0.7;
-await laserTime(300);
+laserstat.opacity = 0.4;  //laser animation
+await laserTime(1000);
 
 laserstat.opacity = 1;
-await laserTime(400);
+await laserTime(50);
 
-laserstat.opacity = 0.7;
-await laserTime(200);
+laserstat.opacity=0.95;
+await laserTime(50);
 
-laserstat.opacity = 0.4;
-await laserTime(200);
+laserstat.opacity=0.9;
+await laserTime(50);
+laserstat.opacity=0.85;
+await laserTime(50);
+
+laserstat.opacity = 0.8;
+await laserTime(50);
+laserstat.opacity=0.75;
+await laserTime(50);
+
+laserstat.opacity=0.7;
+await laserTime(50);
+
+laserstat.opacity=0.65;
+await laserTime(50);
+
+laserstat.opacity = 0.6;
+await laserTime(50);
+
+laserstat.opacity=0.55;
+await laserTime(50);
+
+laserstat.opacity=0.5;
+await laserTime(50);
+
+laserstat.opacity=0.45;
+await laserTime(50);
+
+laserstat.opacity=0.4;
+await laserTime(50);
+laserstat.opacity=0.35;
+await laserTime(50);
+
+laserstat.opacity=0.3;
+await laserTime(50);
+
+laserstat.opacity=0.25;
+await laserTime(50);
+
+laserstat.opacity=0.2;
+await laserTime(50);
+
+laserstat.opacity=0.15;
+await laserTime(50);
+
+laserstat.opacity=0.1;
+await laserTime(50);
+
+laserstat.opacity=0.05;
+await laserTime(50);
 
     laserstat.opacity = 0;
     laseractive = false;
@@ -408,13 +451,14 @@ function loop60fps() {
      movementupdate();
      gravity();
     border();
-    if (!laseractive && laserRequested) {
+    if (!laseractive&&laserRequested) {
         laserRequested = false;
         fire();
     }
-    if (laseractive) {
-        drawlaser();
+    if(laseractive){
+        drawlaser()
     }
+    
     hp();
     requestAnimationFrame(loop60fps);
 }
