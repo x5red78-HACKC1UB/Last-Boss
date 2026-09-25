@@ -5,11 +5,16 @@ const start_button=document.getElementById('start');
 const laserimg=document.querySelectorAll('img[src*="/lasers/"]');
 const img = new Image();
 img.src = "lasers/laser1.svg";
+let direction="up";
+let dashallowed=true;
+let isDashing=false;
+ let dashX=0;
+let dashY=0;
 let player={
     x:60,
     y:60,
-    width:25,
-    height:25,
+    width:20,
+    height:20,
     speed:5,
     health:10,
     velocityY:0,
@@ -31,6 +36,7 @@ let keys={
 }
 let mode="normal";
 let laserRequested = false;
+const dashTime=(ms)=>new Promise((resolve) => setTimeout(resolve, ms));
 
 if(mode==="normal"){
     keys={
@@ -59,8 +65,8 @@ if(mode==="bounce"){
     player={
     x:60,
     y:60,
-    width:25,
-    height:25,
+    width:20,
+    height:20,
     speed:10,
     health:10,
     velocityY:0,
@@ -74,6 +80,10 @@ function border() {
 
 window.addEventListener('keydown',(event)=>{ //key input
 const key=event.key.toLowerCase();
+if(event.code==='Space'){
+    dash();
+    event.preventDefault();
+}
 if (key === '1') {
     player.health = Math.max(0, player.health - 1);
     event.preventDefault();
@@ -112,10 +122,12 @@ if(key in keys){
 });
 
 function movementupdate() {
-    if (keys.a) player.x -= player.speed;
-    if (keys.d) player.x += player.speed; //movement code
-    if(keys.arrowleft)player.x -=player.speed;
-    if(keys.arrowright) player.x +=player.speed;
+    if (isDashing) return;
+
+    if (keys.a) { player.x -= player.speed; dashX=-50; }
+    if (keys.d) { player.x += player.speed; dashX=50;} //movement code
+    if (keys.arrowleft) { player.x -= player.speed; dashX=-50}
+    if (keys.arrowright) { player.x += player.speed; dashX=50 }
 
     if (mode === "gravity") {
         if ((keys.w || keys.arrowup) && player.grounded) {
@@ -124,13 +136,43 @@ function movementupdate() {
         }
     } else {
         if (mode==="normal") {
-        if (keys.w || keys.arrowup) player.y -= player.speed;
-        if (keys.s || keys.arrowdown) player.y += player.speed;
+        if (keys.w || keys.arrowup) { player.y -= player.speed; dashY=-50; }
+        if (keys.s || keys.arrowdown) { player.y += player.speed;  dashY=50; }
     }else{
-        if (keys.w || keys.arrowup) player.y -= player.speed;
-        if (keys.s || keys.arrowdown) player.y += player.speed;
+        if (keys.w || keys.arrowup) { player.y -= player.speed; dashY=-50;}
+        if (keys.s || keys.arrowdown) { player.y += player.speed; dashY=50; }
     }
 }
+}
+function dash() {
+    if(!dashallowed)return;
+    if (mode !== "normal") return;
+
+    dashX=0;
+    dashY=0;
+    if (keys.a || keys.arrowleft) dashX=-100;
+    if (keys.d || keys.arrowright) dashX=100;
+    if (keys.w || keys.arrowup) dashY=-100;
+    if (keys.s || keys.arrowdown) dashY=100;
+    if (dashX===0 && dashY===0) dashY=-100;
+
+    dashallowed=false;
+    isDashing=true;
+    let distance=0;
+    const dashInterval=setInterval(() => {
+        player.x += dashX / 10;
+        player.y += dashY / 10;
+        distance += 5;
+        border();
+
+        if (distance >= 100) {
+            clearInterval(dashInterval);
+            isDashing=false;
+            dashX=0;
+            dashY=0;
+            setTimeout(() => { dashallowed=true; }, 900);
+        }
+    }, 16);
 }
 
 
@@ -323,7 +365,7 @@ if (mode==="gravity") {
 }
 const laserimages = [];
 
-for (let index = 0; index < 6; index++) {
+for (let index = 0; index < 9; index++) {
     const image = new Image();
     image.src = `lasers/laser${index + 1}.svg`;
     laserimages.push(image);
