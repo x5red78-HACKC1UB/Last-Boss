@@ -30,6 +30,7 @@ let keys={
     arrowdown:false,
 }
 let mode="normal";
+let laserRequested = false;
 
 if(mode==="normal"){
     keys={
@@ -79,6 +80,10 @@ if (key === '1') {
 }
 if (key === '2') {
     player.health = Math.max(0, player.health + 1);
+    event.preventDefault();
+}
+if (key === '6') {
+    laserRequested = true;
     event.preventDefault();
 }
 if (key === '5') {
@@ -403,7 +408,8 @@ function loop60fps() {
      movementupdate();
      gravity();
     border();
-    if (!laseractive) {
+    if (!laseractive && laserRequested) {
+        laserRequested = false;
         fire();
     }
     if (laseractive) {
