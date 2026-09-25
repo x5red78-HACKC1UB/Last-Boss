@@ -2,6 +2,9 @@
 const game=document.getElementById('gamecanvas');
 const ctx=game ? game.getContext('2d'):null;
 const start_button=document.getElementById('start');
+const laserimg=document.querySelectorAll('img[src*="/lasers/"]');
+const img = new Image();
+img.src = "lasers/laser1.svg";
 let player={
     x:60,
     y:60,
@@ -11,7 +14,7 @@ let player={
     health:10,
     velocityY:0,
     grounded:false,
-}
+};
 let gravitypower=0.25;
 const bouncegravitypower=0.3;
 const bounceDamping=0.95;
@@ -63,7 +66,6 @@ if(mode==="bounce"){
     grounded:false,
     }
 }
-
 function border() {
     player.x = Math.max(0, Math.min(player.x, game.width - player.width)); //stops the player from escaping
     player.y = Math.max(0, Math.min(player.y, game.height - player.height));
@@ -73,6 +75,10 @@ window.addEventListener('keydown',(event)=>{ //key input
 const key=event.key.toLowerCase();
 if (key === '1') {
     player.health = Math.max(0, player.health - 1);
+    event.preventDefault();
+}
+if (key === '2') {
+    player.health = Math.max(0, player.health + 1);
     event.preventDefault();
 }
 if (key === '5') {
@@ -284,14 +290,14 @@ function draw(type){ //Massive img loader
 function gravity() {
     if (mode !== "gravity" && mode !== "bounce") return;
 if (mode==="gravity") {
-    player.grounded = false;
+    player.grounded = false; // grounded prevent jumping in the air
 
    
     if (!(keys.w || keys.arrowup) && player.velocityY < 0) {
         player.velocityY *= 0.8;
     }
 
-    player.velocityY += gravitypower;
+    player.velocityY += gravitypower; //increases downward velocity :P
     player.y += player.velocityY;
 
     if (player.y + player.height >= game.height) {
@@ -310,15 +316,47 @@ if (mode==="gravity") {
     }
 }
 }
+const laserimages = [];
 
-function loop60fps() {
-    if(!game || !ctx)return;
-     ctx.clearRect(0, 0, game.width, game.height); // Makes the game run smoothly
-     movementupdate();
-     gravity();
-    border();
-    hp();
-    requestAnimationFrame(loop60fps);
+for (let index = 0; index < 6; index++) {
+    const image = new Image();
+    image.src = `lasers/laser${index + 1}.svg`;
+    laserimages.push(image);
+}
+
+let laseractive = false;
+
+let laserstat = {
+    img: laserimages[0],
+    width: game.width,
+    height: game.height,
+    opacity: 0,
+    x: 0,
+    y: 0,
+};
+
+function randomLaser() {
+    const random = Math.floor(Math.random() * laserimages.length);
+    laserstat.img = laserimages[random];
+    laserstat.width = game.width;
+    laserstat.height = game.height;
+    laserstat.x = 0;
+    laserstat.y = 0;
+}
+
+function drawlaser() {
+    if (!laserstat.img) return;
+
+    ctx.save();
+    ctx.globalAlpha = laserstat.opacity;
+    ctx.drawImage(
+        laserstat.img,
+        laserstat.x,
+        laserstat.y,
+        laserstat.width,
+        laserstat.height
+    );
+    ctx.restore();
 }
  function hp() {
     const skinPrefix = mode === "bounce"
@@ -329,7 +367,51 @@ function loop60fps() {
 
     draw(skinPrefix + player.health);
  }
+const laserTime=(ms)=>new Promise((resolve) => setTimeout(resolve, ms));
 
+async function fire() {
+    if (laseractive) return;
+
+    laseractive = true;
+    randomLaser();
+
+   laserstat.opacity = 0.2;
+await laserTime(300);
+
+laserstat.opacity = 0.4;
+await laserTime(300);
+
+laserstat.opacity = 0.7;
+await laserTime(300);
+
+laserstat.opacity = 1;
+await laserTime(400);
+
+laserstat.opacity = 0.7;
+await laserTime(200);
+
+laserstat.opacity = 0.4;
+await laserTime(200);
+
+    laserstat.opacity = 0;
+    laseractive = false;
+}
+
+function loop60fps() {
+    if(!game || !ctx)return;
+     ctx.clearRect(0, 0, game.width, game.height); // Makes the game run smoothly
+     movementupdate();
+     gravity();
+    border();
+    if (!laseractive) {
+        fire();
+    }
+    if (laseractive) {
+        drawlaser();
+    }
+    hp();
+    requestAnimationFrame(loop60fps);
+}
 //Start Game
 function startgame() {
     document.body.classList.add("game-started");
