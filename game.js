@@ -10,6 +10,8 @@ let dashallowed=true;
 let isDashing=false;
  let dashX=0;
 let dashY=0;
+let phase=1;
+let attackchosen=null;
 let player={
     x:60,
     y:60,
@@ -38,6 +40,7 @@ let mode="normal";
 let laserRequested = false;
 const dashTime=(ms)=>new Promise((resolve) => setTimeout(resolve, ms));
 
+// keys for different modes
 if(mode==="normal"){
     keys={
     a:false,
@@ -73,11 +76,12 @@ if(mode==="bounce"){
     grounded:false,
     }
 }
+//border
 function border() {
     player.x = Math.max(0, Math.min(player.x, game.width - player.width)); //stops the player from escaping
     player.y = Math.max(0, Math.min(player.y, game.height - player.height));
 }
-
+//KEYS
 window.addEventListener('keydown',(event)=>{ //key input
 const key=event.key.toLowerCase();
 if(event.code==='Space'){
@@ -93,13 +97,17 @@ if (key === '2') {
     event.preventDefault();
 }
 if (key === '6') {
-    laserRequested = true;
+    boss();
+    event.preventDefault();
+}
+if (key === '7') {
+  laserRequested=true;
     event.preventDefault();
 }
 if (key === '5') {
     if (mode === "normal") {
         mode = "gravity";
-    } else if (mode === "gravity") {  //Mode switch
+    } else if (mode === "gravity") {  
         mode = "bounce";
     } else {
         mode = "normal";
@@ -120,7 +128,7 @@ if(key in keys){
     event.preventDefault();
 }
 });
-
+//MOVEMENT
 function movementupdate() {
     if (isDashing) return;
 
@@ -144,42 +152,45 @@ function movementupdate() {
     }
 }
 }
+// DASH!!!!!!  wait, like geometry dash?
 function dash() {
     if(!dashallowed)return;
     if (mode !== "normal") return;
 
+    const dashDistance=250;
+    const dashSteps=10;
     dashX=0;
     dashY=0;
-    if (keys.a || keys.arrowleft) dashX=-100;
-    if (keys.d || keys.arrowright) dashX=100;
-    if (keys.w || keys.arrowup) dashY=-100;
-    if (keys.s || keys.arrowdown) dashY=100;
-    if (dashX===0 && dashY===0) dashY=-100;
+    if (keys.a || keys.arrowleft) dashX=-dashDistance;
+    if (keys.d || keys.arrowright) dashX=dashDistance;
+    if (keys.w || keys.arrowup) dashY=-dashDistance;
+    if (keys.s || keys.arrowdown) dashY=dashDistance;
+    if (dashX===0 && dashY===0) dashY=-dashDistance;
 
     dashallowed=false;
     isDashing=true;
     let distance=0;
     const dashInterval=setInterval(() => {
-        player.x += dashX / 10;
-        player.y += dashY / 10;
-        distance += 5;
+        player.x += dashX / dashSteps;
+        player.y += dashY / dashSteps;
+        distance += dashDistance / dashSteps;
         border();
 
-        if (distance >= 100) {
+        if (distance >= dashDistance) {
             clearInterval(dashInterval);
             isDashing=false;
             dashX=0;
             dashY=0;
-            setTimeout(() => { dashallowed=true; }, 900);
+            setTimeout(() => { dashallowed=true; }, 500);
         }
     }, 16);
 }
 
 
-
+//start button ...
 start_button.addEventListener('click', startgame);
 
-//Resizing
+//RESIZE WINDOW!!!!!
 function resize() {
     if (!game) return;
 
@@ -191,8 +202,8 @@ function resize() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 }
-//Fuctions
-function draw(type){ //Massive img loader
+
+function draw(type){ //Massive img loader DRAW
     switch(type){
         case "player10":
             ctx.fillStyle="white"
@@ -333,7 +344,7 @@ function draw(type){ //Massive img loader
             console.log("Ngl twin there's nothing here.(unknown image)")    
     }
 }
-
+//GRAVITY
 function gravity() {
     if (mode !== "gravity" && mode !== "bounce") return;
 if (mode==="gravity") {
@@ -363,64 +374,130 @@ if (mode==="gravity") {
     }
 }
 }
+//LASERS
 const laserimages = [];
 
-for (let index = 0; index < 9; index++) {
+for (let index = 0; index < 12; index++) {
     const image = new Image();
     image.src = `lasers/laser${index + 1}.svg`;
     laserimages.push(image);
 }
 
-let laseractive = false;
-
-let laserstat = {
-    img: laserimages[0],
-    width: game.width,
-    height: game.height,
-    opacity: 0,
-    x: 0,
-    y: 0,
-};
+const laserstats = [];
 
 function randomLaser() {
     const random = Math.floor(Math.random() * laserimages.length);
-    laserstat.img = laserimages[random];
-    laserstat.width = game.width;
-    laserstat.height = game.height;
-    laserstat.x = 0;
-    laserstat.y = 0;
+    return {
+        img: laserimages[random],
+        width: game.width,
+        height: game.height,
+        opacity: 0,
+        x: 0,
+        y: 0,
+    };
+}
+function selectedattack(attack) {
+     attackchosen=`lasers/laser${attack}.svg`
+     if (Number(attack)>12 || Number(attack)<1&& Number.isInteger(attack)) {
+        attack=1;
+        attackchosen=`lasers/laser${attack}.svg`
+     }
+ laserRequested=true;
 }
 
 function drawlaser() {
-    if (!laserstat.img) return;
+    laserstats.forEach((laserstat) => {
+        if (!laserstat.img) return;
 
-    ctx.save();
-    ctx.globalAlpha = laserstat.opacity;
-    ctx.drawImage(
-        laserstat.img,
-        laserstat.x,
-        laserstat.y,
-        laserstat.width,
-        laserstat.height
-    );
-    ctx.restore();
+        ctx.save();
+        ctx.globalAlpha = laserstat.opacity;
+        ctx.drawImage(
+            laserstat.img,
+            laserstat.x,
+            laserstat.y,
+            laserstat.width,
+            laserstat.height
+        );
+        ctx.restore();
+    });
 }
- function hp() {
-    const skinPrefix = mode === "bounce"
-        ? "bounce"
-        : mode === "gravity"
-            ? "gravity"
-            : "player";
 
-    draw(skinPrefix + player.health);
- }
 const laserTime=(ms)=>new Promise((resolve) => setTimeout(resolve, ms));
-
+async function boss() {
+    await laserTime(3000);
+selectedattack(1);
+await laserTime(1500);
+selectedattack(3);
+await laserTime(1000);
+selectedattack(2);
+await laserTime(1000);
+selectedattack(5);
+await laserTime(1750);
+selectedattack(5);
+await laserTime(500);
+selectedattack(6);
+await laserTime(500);
+selectedattack(9);
+await laserTime(1000);
+selectedattack(10);
+await laserTime(1750);
+selectedattack(10);
+await laserTime(400);
+selectedattack(11);
+await laserTime(2500);
+selectedattack(12);
+await laserTime(7);
+selectedattack(12);
+await laserTime(1750);
+selectedattack(9);
+await laserTime(500);
+selectedattack(7);
+await laserTime(5000);
+selectedattack(3);
+await laserTime(1000);
+selectedattack(2);
+await laserTime(2000);
+selectedattack(7);
+await laserTime(300)
+selectedattack(11);
+await laserTime(500);
+selectedattack(10);
+await laserTime(300);
+selectedattack(11);
+await laserTime(500);
+selectedattack(7);
+await laserTime(300);
+selectedattack(11);
+await laserTime(500);
+selectedattack(10);
+await laserTime(300);
+selectedattack(11);
+await laserTime(800);
+selectedattack(1);
+await laserTime(1000);
+selectedattack(2);
+await laserTime(1100);
+phase=2;
+}
 async function fire() {
-    if (laseractive) return;
+    let laserstat;
+    if (attackchosen) {
+        const chosenlaser= new Image();
+        chosenlaser.src=attackchosen;
 
-    laseractive = true;
-    randomLaser();
+        laserstat = {
+            img: chosenlaser,
+      width: game.width,
+      height: game.height,
+      opacity: 0,
+      x: 0,
+      y: 0,
+        };
+        attackchosen = null;
+    }else{
+laserstat= randomLaser();
+    }
+    laserstats.push(laserstat);
 
 
 laserstat.opacity = 0.4;  //laser animation
@@ -484,22 +561,41 @@ laserstat.opacity=0.05;
 await laserTime(50);
 
     laserstat.opacity = 0;
-    laseractive = false;
+    laserstats.splice(laserstats.indexOf(laserstat), 1);
 }
+//MODE DRAW
+ function hp() {
+    let skinPrefix;
 
+     switch (mode) {
+        case "bounce":
+            skinPrefix = "bounce";
+            break;
+
+        case "gravity":
+            skinPrefix = "gravity";
+            break;
+
+        default:
+            skinPrefix = "player";
+            break;
+     }
+
+    draw(skinPrefix + player.health);
+ }
+
+ //GAMELOOP (smooth things go here)
 function loop60fps() {
     if(!game || !ctx)return;
      ctx.clearRect(0, 0, game.width, game.height); // Makes the game run smoothly
      movementupdate();
      gravity();
     border();
-    if (!laseractive&&laserRequested) {
+    if (laserRequested) {
         laserRequested = false;
         fire();
     }
-    if(laseractive){
-        drawlaser()
-    }
+    drawlaser();
     
     hp();
     requestAnimationFrame(loop60fps);
@@ -514,3 +610,22 @@ function startgame() {
     loop60fps();
    
 }
+
+
+// TABLE of stuff
+// Line 1: global var
+// Line 42: keys for different modes
+// Line 78: borders
+// Line 83: keys(any key input here)
+// Line 130: Movement
+// Line 154: dash
+// Line 189: start button
+// Line 192: Resizing
+// Line 205: MASSIVE img loader
+// Line 346:Gravity(bounce and gravity)
+// Line 376: Lasers
+// Line 421: BOOSSS
+//Line 512: hp(mode drawing here)
+// Line 533: Gameloop
+//Line 549: Start game
+//Line 561: Table of contents(just incase you forgot)
