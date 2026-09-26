@@ -474,7 +474,7 @@ await laserTime(300);
 selectedattack(11);
 await laserTime(800);
 selectedattack(1);
-await laserTime(1000);
+await laserTime(1500);
 selectedattack(2);
 await laserTime(1100);
 phase=2;
