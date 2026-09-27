@@ -492,7 +492,7 @@ selectedattack(2);
 await laserTime(500);
 phase=2;
 await laserTime(2000);
-for (let index = 0; index < 480; index++) {
+for (let index = 0; index < 780; index++) {
  selectedattack(13);
     await laserTime(50);
     }
