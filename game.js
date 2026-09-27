@@ -377,7 +377,7 @@ if (mode==="gravity") {
 //LASERS
 const laserimages = [];
 
-for (let index = 0; index < 12; index++) {
+for (let index = 0; index < 13; index++) {
     const image = new Image();
     image.src = `lasers/laser${index + 1}.svg`;
     laserimages.push(image);
@@ -392,15 +392,16 @@ function randomLaserColor() {
 
 function randomLaser() {
     const random = Math.floor(Math.random() * laserimages.length);
+    const isLaser13 = random + 1 === 13;
     return {
        
              img: laserimages[random],
         color: (phase>=2)?randomLaserColor() : "red",
-        width: game.width,
-        height: game.height,
+        width: isLaser13 ? 84 : game.width,
+        height: isLaser13 ? 84 : game.height,
         opacity: 0,
-        x: 0,
-        y: 0,
+        x: isLaser13 ? Math.floor(Math.random() * game.width) : 0,
+        y: isLaser13 ? Math.floor(Math.random() * game.height) : 0,
        
              
         
@@ -408,16 +409,15 @@ function randomLaser() {
 }
 function selectedattack(attack) {
      attackchosen=`lasers/laser${attack}.svg`
-     if (Number(attack)>12 || Number(attack)<1&& Number.isInteger(attack)) {
+     if (Number(attack)>13 || Number(attack)<1&& Number.isInteger(Number(attack))) {
         attack=1;
         attackchosen=`lasers/laser${attack}.svg`
      }
  laserRequested=true;
 }
-
 function drawlaser() {
     laserstats.forEach((laserstat) => {
-        if (!laserstat.img) return;
+        if (!laserstat.img || !laserstat.img.complete || laserstat.img.naturalWidth === 0) return;
 
         ctx.save();
         ctx.globalAlpha = laserstat.opacity;
@@ -491,27 +491,41 @@ await laserTime(3000);
 selectedattack(2);
 await laserTime(500);
 phase=2;
+await laserTime(2000);
+for (let index = 0; index < 480; index++) {
+ selectedattack(13);
+    await laserTime(50);
+    }
+
 }
+
 async function fire() {
     let laserstat;
     if (attackchosen) {
-        const chosenlaser= new Image();
-        chosenlaser.src=attackchosen;
+        const chosenlaser = laserimages.find((image) => image.src.endsWith(attackchosen.split("/").pop()));
 
         laserstat = {
             img: chosenlaser,
         color: phase >= 2 ? randomLaserColor() : "red",
-      width: game.width,
-      height: game.height,
+      width: (attackchosen===`lasers/laser${13}.svg`)?84:game.width,
+      height: (attackchosen===`lasers/laser${13}.svg`)?84:game.height,
       opacity: 0,
-      x: 0,
-      y: 0,
+    x: (attackchosen===`lasers/laser${13}.svg`)?Math.floor(Math.random()*game.width):0,
+      y: (attackchosen===`lasers/laser${13}.svg`)?Math.floor(Math.random()*game.height):0,
         };
         attackchosen = null;
     }else{
 laserstat= randomLaser();
     }
-    laserstats.push(laserstat);
+    if (attackchosen===`lasers/laser${13}.svg`) {
+        for (let index = 0; index < 19; index++) {
+           laserstats.push(laserstat); 
+        }
+    } else {
+        laserstats.push(laserstat); 
+    }
+   
+
 
 
 laserstat.opacity = 0.4;  //laser animation
