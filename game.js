@@ -385,15 +385,25 @@ for (let index = 0; index < 12; index++) {
 
 const laserstats = [];
 
+function randomLaserColor() {
+    const color = Math.floor(Math.random() * 360);
+    return `hsl(${color} 100% 60%)`;
+}
+
 function randomLaser() {
     const random = Math.floor(Math.random() * laserimages.length);
     return {
-        img: laserimages[random],
+       
+             img: laserimages[random],
+        color: (phase>=2)?randomLaserColor() : "red",
         width: game.width,
         height: game.height,
         opacity: 0,
         x: 0,
         y: 0,
+       
+             
+        
     };
 }
 function selectedattack(attack) {
@@ -418,6 +428,9 @@ function drawlaser() {
             laserstat.width,
             laserstat.height
         );
+        ctx.globalCompositeOperation = "source-atop";
+        ctx.fillStyle = laserstat.color;
+        ctx.fillRect(laserstat.x, laserstat.y, laserstat.width, laserstat.height);
         ctx.restore();
     });
 }
@@ -476,7 +489,7 @@ await laserTime(800);
 selectedattack(1);
 await laserTime(3000);
 selectedattack(2);
-await laserTime(1100);
+await laserTime(500);
 phase=2;
 }
 async function fire() {
@@ -487,6 +500,7 @@ async function fire() {
 
         laserstat = {
             img: chosenlaser,
+        color: phase >= 2 ? randomLaserColor() : "red",
       width: game.width,
       height: game.height,
       opacity: 0,
