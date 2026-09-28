@@ -496,19 +496,21 @@ await laserTime(2000);
 LASER13SIZE=84;
 for (let index = 0; index < 200; index++) {
  selectedattack(13);
-    await laserTime(50);
+    await laserTime(20);
     selectedattack(13);
-    await laserTime(50);
+    await laserTime(20);
     selectedattack(13);
-    await laserTime(50)
+    await laserTime(20)
     }
     await laserTime(200);
     LASER13SIZE=150;
     for (let index = 0; index < 40; index++) {
  selectedattack(13);
-    await laserTime(50);
+    await laserTime(30);
     selectedattack(13);
-    await laserTime(50)
+    await laserTime(30);
+    selectedattack(13);
+    await laserTime(30)
     }
 for (let index = 0; index < 50; index++) {
  selectedattack(13);
@@ -518,8 +520,8 @@ for (let index = 0; index < 50; index++) {
     selectedattack(11);
     await laserTime(50);
     } 
-    await laserTime(2000);
-    for (let index = 0; index < 20; index++) {
+    await laserTime(4000);
+    for (let index = 0; index < 2; index++) {
     selectedattack(9);
     await laserTime(50);
     selectedattack(7);
