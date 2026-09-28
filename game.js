@@ -12,6 +12,7 @@ let isDashing=false;
 let dashY=0;
 let phase=1;
 let attackchosen=null;
+let LASER13SIZE=84;
 let player={
     x:60,
     y:60,
@@ -397,8 +398,8 @@ function randomLaser() {
        
              img: laserimages[random],
         color: (phase>=2)?randomLaserColor() : "red",
-        width: isLaser13 ? 84 : game.width,
-        height: isLaser13 ? 84 : game.height,
+        width: isLaser13 ? LASER13SIZE : game.width,
+        height: isLaser13 ? LASER13SIZE : game.height,
         opacity: 0,
         x: isLaser13 ? Math.floor(Math.random() * game.width) : 0,
         y: isLaser13 ? Math.floor(Math.random() * game.height) : 0,
@@ -492,11 +493,40 @@ selectedattack(2);
 await laserTime(500);
 phase=2;
 await laserTime(2000);
-for (let index = 0; index < 780; index++) {
+LASER13SIZE=84;
+for (let index = 0; index < 200; index++) {
  selectedattack(13);
     await laserTime(50);
+    selectedattack(13);
+    await laserTime(50);
+    selectedattack(13);
+    await laserTime(50)
     }
-
+    await laserTime(200);
+    LASER13SIZE=150;
+    for (let index = 0; index < 40; index++) {
+ selectedattack(13);
+    await laserTime(50);
+    selectedattack(13);
+    await laserTime(50)
+    }
+for (let index = 0; index < 50; index++) {
+ selectedattack(13);
+    await laserTime(50);
+   selectedattack(10);
+    await laserTime(50);
+    selectedattack(11);
+    await laserTime(50);
+    } 
+    await laserTime(2000);
+    for (let index = 0; index < 20; index++) {
+    selectedattack(9);
+    await laserTime(50);
+    selectedattack(7);
+    await laserTime(50);
+    }
+    await laserTime(2000);
+    LASER13SIZE=84;
 }
 
 async function fire() {
@@ -507,8 +537,8 @@ async function fire() {
         laserstat = {
             img: chosenlaser,
         color: phase >= 2 ? randomLaserColor() : "red",
-      width: (attackchosen===`lasers/laser${13}.svg`)?84:game.width,
-      height: (attackchosen===`lasers/laser${13}.svg`)?84:game.height,
+      width: (attackchosen===`lasers/laser${13}.svg`)?LASER13SIZE:game.width,
+      height: (attackchosen===`lasers/laser${13}.svg`)?LASER13SIZE:game.height,
       opacity: 0,
     x: (attackchosen===`lasers/laser${13}.svg`)?Math.floor(Math.random()*game.width):0,
       y: (attackchosen===`lasers/laser${13}.svg`)?Math.floor(Math.random()*game.height):0,
@@ -532,61 +562,61 @@ laserstat.opacity = 0.4;  //laser animation
 await laserTime(1000);
 
 laserstat.opacity = 1;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.95;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.9;
-await laserTime(50);
+await laserTime(35);
 laserstat.opacity=0.85;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity = 0.8;
-await laserTime(50);
+await laserTime(35);
 laserstat.opacity=0.75;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.7;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.65;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity = 0.6;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.55;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.5;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.45;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.4;
-await laserTime(50);
+await laserTime(35);
 laserstat.opacity=0.35;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.3;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.25;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.2;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.15;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.1;
-await laserTime(50);
+await laserTime(35);
 
 laserstat.opacity=0.05;
-await laserTime(50);
+await laserTime(35);
 
     laserstat.opacity = 0;
     laserstats.splice(laserstats.indexOf(laserstat), 1);
